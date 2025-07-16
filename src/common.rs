@@ -39,13 +39,13 @@ pub struct CpuFeatures {
 macro_rules! bitfield_flag {
     ($get:ident, $set:ident, $byte:expr, $bit:expr) => {
         pub fn $get(&self) -> bool {
-            (self.bits[$byte] & (1 << $bit)) != 0
+            (self.bits[$byte] & ((1u32 << $bit) as u8)) != 0
         }
         pub fn $set(&mut self, val: bool) {
             if val {
-                self.bits[$byte] |= 1 << $bit;
+                self.bits[$byte] |= (1u32 << $bit) as u8;
             } else {
-                self.bits[$byte] &= !(1 << $bit);
+                self.bits[$byte] &= !((1u32 << $bit) as u8);
             }
         }
     };
