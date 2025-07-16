@@ -301,6 +301,12 @@ pub fn info_for_cpu(idx: usize) -> Option<X86CpuInfo> {
     CPU_INFOS.get(idx).cloned()
 }
 
+/// Return a slice of all cached CPU infos
+pub fn all_cpuinfos() -> &'static [X86CpuInfo] {
+    init_all_core_cache();
+    &*CPU_INFOS
+}
+
 /// Print all cached CPU infos to stdout, with count and separators
 pub fn print_all_cpuinfos() {
     // Ensure cache is populated
