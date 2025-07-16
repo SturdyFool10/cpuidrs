@@ -1,3 +1,24 @@
+#![allow(dead_code)]
+use core::fmt;
+#[cfg(any(target_os = "linux", not(target_os = "linux")))]
+use libc::{sysconf, _SC_NPROCESSORS_ONLN};
+#[cfg(target_os = "linux")]
+use std::fs;
+
+bitflags! {
+    #[derive(Debug)]
+    /// Packed feature flags for RISC-V
+    pub struct RiscVFeatures: u32 {
+        const I = 1 << 0;  // Base integer ISA
+        const M = 1 << 1;  // Integer multiply/divide
+        const A = 1 << 2;  // Atomic instructions
+        const F = 1 << 3;  // Single-precision FP
+        const D = 1 << 4;  // Double-precision FP
+        const C = 1 << 5;  // Compressed instructions
+    }
+}
+
+/// RISC-V CPU information
 #[derive(Debug)]
 pub struct RiscVCpuInfo {
     pub vendor: String,
@@ -9,7 +30,7 @@ pub struct RiscVCpuInfo {
 
 /// Gather RISC-V CPU info
 pub fn gather() -> RiscVCpuInfo {
-    // Vendor & ISA string parsing
+    // Vendor & ISA parsing
     let (vendor, brand, features) = {
         #[cfg(target_os = "linux")]
         {
@@ -17,12 +38,12 @@ pub fn gather() -> RiscVCpuInfo {
             let mut vendor = String::new();
             let mut isa_line = String::new();
             for line in info.lines() {
-                if line.starts_with("vendor	:") {
+                if line.starts_with("vendor\t:") {
                     if let Some(val) = line.split(':').nth(1) {
                         vendor = val.trim().to_string();
                     }
                 }
-                if line.starts_with("isa	:") {
+                if line.starts_with("isa\t:") {
                     if let Some(val) = line.split(':').nth(1) {
                         isa_line = val.trim().to_string();
                     }
@@ -44,10 +65,9 @@ pub fn gather() -> RiscVCpuInfo {
         }
         #[cfg(not(target_os = "linux"))]
         unsafe {
-            // Read misa CSR on bare-metal or other OS
+            // Bare-metal: read misa CSR
             let misa: usize;
             core::arch::asm!("csrr {0}, misa", out(reg) misa);
-            let vendor = String::new();
             let mut feats = RiscVFeatures::empty();
             if misa & (1 << 0) != 0 {
                 feats.insert(RiscVFeatures::I);
@@ -67,7 +87,7 @@ pub fn gather() -> RiscVCpuInfo {
             if misa & (1 << 8) != 0 {
                 feats.insert(RiscVFeatures::C);
             }
-            (vendor, String::new(), feats)
+            (String::new(), String::new(), feats)
         }
     };
 

@@ -109,7 +109,7 @@ pub fn gather() -> ArmCpuInfo {
     }
     #[cfg(target_os = "macos")]
     {
-        // macOS automatic feature detection omitted for brevity
+        // macOS feature detection omitted for brevity
     }
     #[cfg(windows)]
     unsafe {
@@ -125,9 +125,7 @@ pub fn gather() -> ArmCpuInfo {
         #[cfg(windows)]
         {
             let mut info = std::mem::zeroed();
-            unsafe {
-                GetNativeSystemInfo(&mut info);
-            }
+            GetNativeSystemInfo(&mut info);
             info.dwNumberOfProcessors
         }
         #[cfg(not(any(target_os = "linux", target_os = "macos", windows)))]

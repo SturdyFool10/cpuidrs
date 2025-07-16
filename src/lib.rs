@@ -1,11 +1,11 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
-mod arm;
+pub mod arm;
 #[cfg(any(target_arch = "riscv32", target_arch = "riscv64"))]
-mod riscv;
+pub mod riscv;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
-mod x86;
+pub mod x86;
 
 /// Unified CPU info enum
 #[derive(Debug)]
