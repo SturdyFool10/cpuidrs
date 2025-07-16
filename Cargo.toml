@@ -14,6 +14,14 @@ libc = "0.2"
 winapi = { version = "0.3", features = ["sysinfoapi", "processthreadsapi", "winbase"] }
 num_cpus = "1.13"
 raw-cpuid = "9.0"
+cc = "1.2.29"
+bitflags = "2.9.1"
+
+[build-dependencies]
+cc = "1.2.29"
 
 [dev-dependencies]
 # For testing on hosted targets
+
+[lib]
+crate-type = ["rlib", "cdylib"]
