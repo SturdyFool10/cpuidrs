@@ -19,6 +19,7 @@ use crate::riscv::{get_features as riscv_features, get_topology as riscv_topolog
 use crate::x86::{get_features as x86_features, get_topology as x86_topology};
 
 /// CPU information: architecture, supported features, and topology.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CpuInfo {
     /// Architecture string, e.g. "x86_64", "aarch64", "riscv64", or "bare-metal"
     pub architecture: &'static str,
@@ -29,7 +30,7 @@ pub struct CpuInfo {
 }
 
 /// Flags for instruction set extensions across all supported architectures.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash)]
 pub struct CpuFeatures {
     // x86/x86_64
     pub mmx: bool,
@@ -72,7 +73,7 @@ pub struct CpuFeatures {
 }
 
 /// Grouping info for each core type in a hybrid system.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CoreTypeInfo {
     /// Identifier (e.g. "Performance", "Efficiency", or capacity string)
     pub identifier: &'static str,
@@ -83,7 +84,7 @@ pub struct CoreTypeInfo {
 }
 
 /// Topology, including hybrid detection flag and per-type counts.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CpuTopology {
     /// True if multiple core types detected
     pub is_hybrid: bool,
