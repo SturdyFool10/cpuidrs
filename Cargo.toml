@@ -2,6 +2,13 @@
 name = "cpuid"
 version = "0.1.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "A comprehensive Rust library for CPUID instruction decoding, providing a simple API to query CPU features across multiple architectures. Easily integrate hardware detection and instruction set support into your projects."
+homepage = "https://github.com/SturdyFool10/cpuidrs"
+repository = "https://github.com/SturdyFool10/cpuidrs"
+readme = "readme.md"
+keywords = ["cpuid", "cpu", "instruction-set", "hardware", "rust"]
+categories = ["hardware-support", "no-std", "os"]
 
 [features]
 default = ["std"]

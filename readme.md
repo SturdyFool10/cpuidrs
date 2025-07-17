@@ -31,3 +31,7 @@ fn main() {
 
 ## Purpose
 This library is designed to allow developers to know whether instruction extensions are supported BEFORE running them so you can get the speed up of using them without causing incompatibility problems with CPUs that do not support them. This approach also would allow a developer to create a message saying the program is not supported on this CPU if it does not support the required instruction set.
+
+
+## Legal
+This project is licensed under both the Apache 2.0 and MIT licenses. You can choose which license to use for your project. See the licenses in ./licenses/ for more details.
