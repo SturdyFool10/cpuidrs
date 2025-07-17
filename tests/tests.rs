@@ -1,4 +1,4 @@
-use cpuid::{get_cpu_info, CpuInfo, InstructionSet};
+use cpuidrs::{get_cpu_info, CpuInfo, InstructionSet};
 
 #[test]
 fn test_get_cpu_info_returns_valid_variant() {
