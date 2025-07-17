@@ -102,7 +102,7 @@ pub enum InstructionSet {
     RV_D,
     RV_C,
 }
-
+#[derive(Debug, Clone)]
 pub enum CpuInfo {
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     X86(x86::X86CpuInfo),
