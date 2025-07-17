@@ -24,6 +24,10 @@ extern "C" {
 }
 
 /// Execute CPUID and return (EAX, EBX, ECX, EDX)
+/// Executes the CPUID instruction with the given leaf and subleaf.
+/// Returns a tuple of (EAX, EBX, ECX, EDX) register values.
+/// # Safety
+/// This function is unsafe because it calls FFI and interacts with raw pointers.
 unsafe fn cpuid(leaf: u32, subleaf: u32) -> (u32, u32, u32, u32) {
     let mut a = 0;
     let mut b = 0;
@@ -132,24 +136,39 @@ macro_rules! cpuid_flags {
     };
 }
 
+/// Enum representing the type of CPU core.
+/// Used for hybrid architectures (e.g., Intel Alder Lake).
 #[derive(Clone, Copy, Debug)]
 pub enum CoreType {
+    /// High-performance core (P-core)
     Performance,
+    /// High-efficiency core (E-core)
     Efficiency,
 }
 
+/// Stores information about a single logical x86 CPU.
+/// Includes vendor, brand string, feature flags, core/thread counts, and hybrid core type.
 #[derive(Clone, Debug)]
 pub struct X86CpuInfo {
+    /// CPU vendor string (e.g., "GenuineIntel")
     pub vendor: String,
+    /// CPU brand string (e.g., "Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz")
     pub brand: String,
+    /// Feature flags detected via CPUID
     pub features: X86Features,
+    /// Number of physical cores
     pub cores: u32,
+    /// Number of threads per core
     pub threads_per_core: u32,
+    /// Whether the CPU is hybrid (has different core types)
     pub hybrid: bool,
+    /// The type of core, if hybrid
     pub core_type: Option<CoreType>,
 }
 
 /// Probe info for the current logical CPU (affinity pinned)
+/// Gathers information for the current logical CPU, pinning thread affinity if possible.
+/// Returns an `X86CpuInfo` struct with vendor, brand, features, core/thread counts, and hybrid info.
 fn gather_core() -> X86CpuInfo {
     unsafe {
         let (_m0, ebx, ecx, edx) = cpuid(0, 0);
@@ -241,6 +260,8 @@ fn gather_core() -> X86CpuInfo {
 }
 
 /// One-time probe of every logical CPU in a global cache
+/// Global cache of all logical CPU infos, initialized once at startup.
+/// Uses thread affinity pinning to probe each logical CPU.
 static CPU_INFOS: Lazy<Arc<Vec<X86CpuInfo>>> = Lazy::new(|| {
     let n = std::thread::available_parallelism().unwrap().get();
     let mut vec = Vec::with_capacity(n);
@@ -269,12 +290,16 @@ static CPU_INFOS: Lazy<Arc<Vec<X86CpuInfo>>> = Lazy::new(|| {
 });
 
 /// Initialize the all-core cache; call once at startup
+/// Initializes the global all-core CPU info cache.
+/// Should be called once at program startup for best performance.
 pub fn init_all_core_cache() {
     Lazy::force(&CPU_INFOS);
 }
 
 /// Helper: get current logical CPU index
 #[cfg(target_os = "linux")]
+/// Returns the index of the current logical CPU.
+/// Uses OS-specific APIs for Linux and Windows.
 fn current_cpu_id() -> usize {
     unsafe { sched_getcpu() as usize }
 }
@@ -288,6 +313,8 @@ fn current_cpu_id() -> usize {
 }
 
 /// Return the info for the current logical CPU
+/// Returns the `X86CpuInfo` for the current logical CPU.
+/// Falls back to the first CPU if the index is out of bounds.
 pub fn gather() -> X86CpuInfo {
     let idx = current_cpu_id();
     CPU_INFOS
@@ -297,17 +324,23 @@ pub fn gather() -> X86CpuInfo {
 }
 
 /// Lookup cached info for any logical CPU index
+/// Looks up cached info for any logical CPU index.
+/// Returns `Some(X86CpuInfo)` if the index is valid, otherwise `None`.
 pub fn info_for_cpu(idx: usize) -> Option<X86CpuInfo> {
     CPU_INFOS.get(idx).cloned()
 }
 
 /// Return a slice of all cached CPU infos
+/// Returns a slice of all cached logical CPU infos.
+/// Ensures the cache is initialized before returning.
 pub fn all_cpuinfos() -> &'static [X86CpuInfo] {
     init_all_core_cache();
     &*CPU_INFOS
 }
 
 /// Print all cached CPU infos to stdout, with count and separators
+/// Prints all cached logical CPU infos to stdout, with count and separators.
+/// Useful for debugging and inspection.
 pub fn print_all_cpuinfos() {
     // Ensure cache is populated
     init_all_core_cache();
@@ -320,6 +353,7 @@ pub fn print_all_cpuinfos() {
 }
 
 impl fmt::Display for X86CpuInfo {
+    /// Formats the CPU info for pretty-printing.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,

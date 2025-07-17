@@ -12,28 +12,43 @@ use winapi::um::sysinfoapi::GetNativeSystemInfo;
 
 bitflags! {
     #[derive(Debug)]
-    /// Packed feature flags for ARM/ARM64
+    /// Packed feature flags for ARM/ARM64.
+    /// Each flag represents a CPU feature detected at runtime.
     pub struct ArmFeatures: u64 {
+        /// NEON SIMD instructions
         const NEON  = 1 << 0;
+        /// AES instructions
         const AES   = 1 << 1;
+        /// Polynomial multiplication (PMULL)
         const PMULL = 1 << 2;
+        /// SHA1 instructions
         const SHA1  = 1 << 3;
+        /// SHA2 instructions
         const SHA2  = 1 << 4;
+        /// CRC32 instructions
         const CRC32 = 1 << 5;
     }
 }
 
-/// ARM CPU information
+/// Stores information about a single logical ARM/ARM64 CPU.
+/// Includes vendor, brand string, feature flags, core/thread counts.
 #[derive(Debug)]
 pub struct ArmCpuInfo {
+    /// CPU vendor string (e.g., "ARM", "Apple")
     pub vendor: String,
+    /// CPU brand string (e.g., "Apple M1", "Cortex-A72")
     pub brand: String,
+    /// Feature flags detected at runtime
     pub features: ArmFeatures,
+    /// Number of physical cores
     pub cores: u32,
+    /// Number of threads per core (usually 1 for ARM)
     pub threads_per_core: u32,
 }
 
-/// Gather ARM CPU info
+/// Gathers ARM/ARM64 CPU information for the current system.
+/// Detects vendor, brand, features, and topology (core/thread count).
+/// Uses OS-specific APIs and `/proc/cpuinfo` where available.
 pub fn gather() -> ArmCpuInfo {
     // Vendor & brand
     let (vendor, brand) = {
@@ -145,6 +160,7 @@ pub fn gather() -> ArmCpuInfo {
 }
 
 impl fmt::Display for ArmCpuInfo {
+    /// Formats the ARM CPU info for pretty-printing.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,

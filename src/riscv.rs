@@ -7,28 +7,43 @@ use std::fs;
 
 bitflags! {
     #[derive(Debug)]
-    /// Packed feature flags for RISC-V
+    /// Packed feature flags for RISC-V.
+    /// Each flag represents a supported extension in the RISC-V ISA.
     pub struct RiscVFeatures: u32 {
-        const I = 1 << 0;  // Base integer ISA
-        const M = 1 << 1;  // Integer multiply/divide
-        const A = 1 << 2;  // Atomic instructions
-        const F = 1 << 3;  // Single-precision FP
-        const D = 1 << 4;  // Double-precision FP
-        const C = 1 << 5;  // Compressed instructions
+        /// Base integer ISA
+        const I = 1 << 0;
+        /// Integer multiply/divide
+        const M = 1 << 1;
+        /// Atomic instructions
+        const A = 1 << 2;
+        /// Single-precision floating point
+        const F = 1 << 3;
+        /// Double-precision floating point
+        const D = 1 << 4;
+        /// Compressed instructions
+        const C = 1 << 5;
     }
 }
 
-/// RISC-V CPU information
+/// Stores information about a single logical RISC-V CPU.
+/// Includes vendor, brand string, feature flags, core/thread counts.
 #[derive(Debug)]
 pub struct RiscVCpuInfo {
+    /// CPU vendor string (e.g., "SiFive")
     pub vendor: String,
+    /// CPU brand string or ISA string
     pub brand: String,
+    /// Feature flags detected via ISA string or CSR
     pub features: RiscVFeatures,
+    /// Number of physical cores
     pub cores: u32,
+    /// Number of threads per core (usually 1 for RISC-V)
     pub threads_per_core: u32,
 }
 
-/// Gather RISC-V CPU info
+/// Gathers RISC-V CPU info for the current system.
+/// Parses `/proc/cpuinfo` on Linux, or reads the misa CSR on bare-metal.
+/// Returns a `RiscVCpuInfo` struct with vendor, brand, features, core/thread counts.
 pub fn gather() -> RiscVCpuInfo {
     // Vendor & ISA parsing
     let (vendor, brand, features) = {
@@ -105,6 +120,7 @@ pub fn gather() -> RiscVCpuInfo {
 }
 
 impl fmt::Display for RiscVCpuInfo {
+    /// Formats the RISC-V CPU info for pretty-printing.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,

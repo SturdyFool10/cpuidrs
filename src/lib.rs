@@ -1,13 +1,21 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+//! Unified cross-platform CPU feature detection library.
+//!
+//! This crate provides a unified API for querying CPU features across
+//! x86/x86_64, ARM, and RISC-V architectures.
+
 #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
+/// ARM architecture support module.
 pub mod arm;
 #[cfg(any(target_arch = "riscv32", target_arch = "riscv64"))]
+/// RISC-V architecture support module.
 pub mod riscv;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+/// x86/x86_64 architecture support module.
 pub mod x86;
 
-/// Unified CPU info enum
+/// Enum representing supported CPU instruction sets and features across architectures.
 #[derive(Debug)]
 pub enum InstructionSet {
     // x86/x86_64
@@ -102,17 +110,32 @@ pub enum InstructionSet {
     RvD,
     RvC,
 }
+/// Enum representing CPU information for the current architecture.
+///
+/// Each variant contains architecture-specific CPU info.
 #[derive(Debug, Clone)]
 pub enum CpuInfo {
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    /// x86/x86_64 CPU information.
     X86(x86::X86CpuInfo),
     #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
+    /// ARM CPU information.
     Arm(arm::ArmCpuInfo),
     #[cfg(any(target_arch = "riscv32", target_arch = "riscv64"))]
+    /// RISC-V CPU information.
     RiscV(riscv::RiscVCpuInfo),
 }
 
 impl CpuInfo {
+    /// Checks if the CPU supports the given feature.
+    ///
+    /// # Arguments
+    ///
+    /// * `feature` - The instruction set feature to check.
+    ///
+    /// # Returns
+    ///
+    /// `true` if the feature is supported, `false` otherwise.
     pub fn has_feature(&self, feature: InstructionSet) -> bool {
         match self {
             #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
@@ -230,7 +253,11 @@ impl CpuInfo {
     }
 }
 
-/// Get CPU info for the current architecture
+/// Gathers CPU information for the current architecture.
+///
+/// # Returns
+///
+/// A [`CpuInfo`] enum containing architecture-specific CPU details.
 pub fn get_cpu_info() -> CpuInfo {
     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
