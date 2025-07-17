@@ -36,13 +36,13 @@ pub enum InstructionSet {
     SSE3,
     PCLMULQDQ,
     MONITOR,
-    DS_CPL,
+    DsCpl,
     VMX,
     SMX,
     EST,
     TM2,
     SSSE3,
-    CNXT_ID,
+    CnxtId,
     SSE41,
     SSE42,
     MOVBE,
@@ -83,24 +83,24 @@ pub enum InstructionSet {
     MOVDIRI,
     LZCNT,
     SSE4A,
-    MISALIGN_SSE,
+    MisalignSse,
     PREFETCHW,
     D3DNOWEXT,
     D3DNOW,
     // ARM
     NEON,
-    ARM_AES,
+    ArmAes,
     PMULL,
     SHA1,
     SHA2,
     CRC32,
     // RISC-V
-    RV_I,
-    RV_M,
-    RV_A,
-    RV_F,
-    RV_D,
-    RV_C,
+    RvI,
+    RvM,
+    RvA,
+    RvF,
+    RvD,
+    RvC,
 }
 #[derive(Debug, Clone)]
 pub enum CpuInfo {
@@ -144,13 +144,13 @@ impl CpuInfo {
                     InstructionSet::SSE3 => info.features.contains(X86Features::SSE3),
                     InstructionSet::PCLMULQDQ => info.features.contains(X86Features::PCLMULQDQ),
                     InstructionSet::MONITOR => info.features.contains(X86Features::MONITOR),
-                    InstructionSet::DS_CPL => info.features.contains(X86Features::DS_CPL),
+                    InstructionSet::DsCpl => info.features.contains(X86Features::DS_CPL),
                     InstructionSet::VMX => info.features.contains(X86Features::VMX),
                     InstructionSet::SMX => info.features.contains(X86Features::SMX),
                     InstructionSet::EST => info.features.contains(X86Features::EST),
                     InstructionSet::TM2 => info.features.contains(X86Features::TM2),
                     InstructionSet::SSSE3 => info.features.contains(X86Features::SSSE3),
-                    InstructionSet::CNXT_ID => info.features.contains(X86Features::CNXT_ID),
+                    InstructionSet::CnxtId => info.features.contains(X86Features::CNXT_ID),
                     InstructionSet::SSE41 => info.features.contains(X86Features::SSE41),
                     InstructionSet::SSE42 => info.features.contains(X86Features::SSE42),
                     InstructionSet::MOVBE => info.features.contains(X86Features::MOVBE),
@@ -191,7 +191,7 @@ impl CpuInfo {
                     InstructionSet::MOVDIRI => info.features.contains(X86Features::MOVDIRI),
                     InstructionSet::LZCNT => info.features.contains(X86Features::LZCNT),
                     InstructionSet::SSE4A => info.features.contains(X86Features::SSE4A),
-                    InstructionSet::MISALIGN_SSE => {
+                    InstructionSet::MisalignSse => {
                         info.features.contains(X86Features::MISALIGN_SSE)
                     }
                     InstructionSet::PREFETCHW => info.features.contains(X86Features::PREFETCHW),
@@ -205,7 +205,7 @@ impl CpuInfo {
                 use arm::ArmFeatures;
                 match feature {
                     InstructionSet::NEON => info.features.contains(ArmFeatures::NEON),
-                    InstructionSet::ARM_AES => info.features.contains(ArmFeatures::AES),
+                    InstructionSet::ArmAes => info.features.contains(ArmFeatures::AES),
                     InstructionSet::PMULL => info.features.contains(ArmFeatures::PMULL),
                     InstructionSet::SHA1 => info.features.contains(ArmFeatures::SHA1),
                     InstructionSet::SHA2 => info.features.contains(ArmFeatures::SHA2),
@@ -217,12 +217,12 @@ impl CpuInfo {
             CpuInfo::RiscV(info) => {
                 use riscv::RiscVFeatures;
                 match feature {
-                    InstructionSet::RV_I => info.features.contains(RiscVFeatures::I),
-                    InstructionSet::RV_M => info.features.contains(RiscVFeatures::M),
-                    InstructionSet::RV_A => info.features.contains(RiscVFeatures::A),
-                    InstructionSet::RV_F => info.features.contains(RiscVFeatures::F),
-                    InstructionSet::RV_D => info.features.contains(RiscVFeatures::D),
-                    InstructionSet::RV_C => info.features.contains(RiscVFeatures::C),
+                    InstructionSet::RvI => info.features.contains(RiscVFeatures::I),
+                    InstructionSet::RvM => info.features.contains(RiscVFeatures::M),
+                    InstructionSet::RvA => info.features.contains(RiscVFeatures::A),
+                    InstructionSet::RvF => info.features.contains(RiscVFeatures::F),
+                    InstructionSet::RvD => info.features.contains(RiscVFeatures::D),
+                    InstructionSet::RvC => info.features.contains(RiscVFeatures::C),
                     _ => false,
                 }
             }
