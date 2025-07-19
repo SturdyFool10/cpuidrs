@@ -13,7 +13,7 @@ You can use CPUIDrs by adding it to your project dependencies. For example, if y
 
 ```toml
 [dependencies]
-cpuidrs = {git = "https://github.com/SturdyFool10/cpuidrs.git"}
+cpuidrs = "0.1.0"
 ```
 ## Usage
 Here's a simple example of how to use CPUIDrs in your Rust project:
