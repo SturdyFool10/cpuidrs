@@ -192,11 +192,12 @@ fn gather_core() -> X86CpuInfo {
 
         let mut f = X86Features::empty();
         let (_e1, _, ec1, ed1) = cpuid(1, 0);
+        // based on https://en.wikipedia.org/wiki/CPUID make fixes.
         cpuid_flags!(f, ed1,
             0=>FPU,1=>VME,2=>DE,3=>PSE,4=>TSC,5=>MSR,
-            6=>PAE,7=>MCE,8=>CX8,9=>APIC,10=>SEP,11=>MTRR,
-            12=>PGE,13=>MCA,14=>CMOV,15=>PAT,16=>PSE36,
-            17=>CLFLUSH,18=>MMX,19=>FXSR,20=>SSE,21=>SSE2,
+            6=>PAE,7=>MCE,8=>CX8,9=>APIC,11=>SEP,12=>MTRR,
+            13=>PGE,14=>MCA,15=>CMOV,16=>PAT,17=>PSE36,
+            19=>CLFLUSH,23=>MMX,24=>FXSR,25=>SSE,26=>SSE2,
         );
         cpuid_flags!(f, ec1,
             0=>SSE3,1=>PCLMULQDQ,2=>DS_CPL,3=>MONITOR,5=>VMX,
@@ -208,19 +209,19 @@ fn gather_core() -> X86CpuInfo {
         cpuid_flags!(f, eb7,
             0=>FSGSBASE,3=>BMI1,4=>HLE,5=>AVX2,7=>SMEP,
             8=>BMI2,9=>ERMS,10=>INVPCID,11=>RTM,14=>MPX,
-            18=>RDSEED,19=>ADX,21=>SHA,23=>CLFLUSHOPT,24=>CLWB,
+            18=>RDSEED,19=>ADX,29=>SHA,23=>CLFLUSHOPT,24=>CLWB,
             20=>SMAP,16=>AVX512F,17=>AVX512DQ,21=>AVX512IFMA,
             28=>AVX512CD,30=>AVX512BW,31=>AVX512VL,
         );
         cpuid_flags!(f, ec7,
             1=>AVX512VBMI,3=>AVX512PKU,6=>AVX512VBMI2,
-            7=>MOVDIR64B,8=>MOVDIRI,
+            28=>MOVDIR64B,27=>MOVDIRI,
         );
         let (max_amd, _, _, _) = cpuid(0x8000_0000, 0);
         if max_amd >= 0x8000_0001 {
             let (_ea, _, ec2, ed2) = cpuid(0x8000_0001, 0);
-            cpuid_flags!(f, ec2,5=>LZCNT,6=>SSE4A,7=>MISALIGN_SSE);
-            cpuid_flags!(f, ed2,8=>PREFETCHW,30=>D3DNOWEXT,31=>D3DNOW);
+            cpuid_flags!(f, ec2,5=>LZCNT,6=>SSE4A,7=>MISALIGN_SSE,8=>PREFETCHW);
+            cpuid_flags!(f, ed2,30=>D3DNOWEXT,31=>D3DNOW);
         }
 
         let (max_l, _, _, _) = cpuid(0, 0);
